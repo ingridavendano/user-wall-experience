@@ -4,12 +4,14 @@ import model
 app = Flask(__name__)
 app.secret_key = "shhhhthisisasecret"
 
+
 @app.route("/")
 def index():
     if session.get("username"):
         return "User %s is logged in! <a href='logout'>Logout</a>" % session["username"]
     else:
         return render_template("index.html")
+
 
 @app.route("/", methods=["POST"])
 def process_login():
@@ -53,10 +55,12 @@ def create_account():
     
     return redirect("user/" + username)
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
 
 @app.route("/user/<username>")
 def view_user(username):
@@ -64,6 +68,7 @@ def view_user(username):
     posts = model.get_user_by_name(username)
     user_id = session.get("username")
     return render_template("wall.html", wall_posts = posts, user_id = user_id)
+
 
 # this grabs info on the wall of a user's wall
 @app.route("/user/<username>", methods=["POST"])
