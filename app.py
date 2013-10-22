@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import model
 
+
 app = Flask(__name__)
 app.secret_key = "shhhhthisisasecret"
 
@@ -36,20 +37,30 @@ def process_login():
 @app.route("/register")
 def register():
     model.connect_to_db()
+
+    # checks if username already exists
     if session.get("username"):
          # get username by id 
          username = model.get_username_by_id(session["username"])
          return redirect("users/"+username)
     else:
+        # if username does not exist then register a new username
         return render_template("register.html")
     #model.register_new_user(new_username, new_password)
+
 
 @app.route("/register", methods=["POST"])
 def create_account():
     model.connect_to_db()
     username = request.form.get("username")
     password = request.form.get("password")
-    model.create_new_user(username, password)
+    password_verify = request.form.get("password_verify")
+
+    if password != password_verify:
+        flash("You did not type the same passwords correctly, try again.")
+        return render_template("register.html")
+    else: 
+        model.create_new_user(username, password)
 
     # TODO automatic login once registration is done
     
